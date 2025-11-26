@@ -1,3 +1,3 @@
 export default function Home() {
-  return <h1 className="border text-2xl">AM working</h1>;
+  return <h1 className="border text-2xl ">AM working</h1>;
 }
