@@ -55,7 +55,7 @@ export default function Register() {
                     type="text"
                     placeholder="Full Name"
                     id="fullName"
-                    value={form.fullName}
+                    // value={form.fullName}
                     onChange={(e) =>
                       setForm({ ...form, fullName: e.target.value })
                     }
@@ -68,7 +68,7 @@ export default function Register() {
                     type="text"
                     placeholder="Username"
                     id="username"
-                    value={form.username}
+                    // value={form.username}
                     onChange={(e) => {
                       setForm({ ...form, username: e.target.value });
                     }}
@@ -81,7 +81,7 @@ export default function Register() {
                     type="text"
                     placeholder="Email"
                     id="email"
-                    value={form.email}
+                    // value={form.email}
                     onChange={(e) => {
                       setForm({ ...form, email: e.target.value });
                     }}
@@ -94,7 +94,7 @@ export default function Register() {
                     type="password"
                     placeholder="Password"
                     id="password"
-                    value={form.password}
+                    // value={form.password}
                     onChange={(e) => {
                       setForm({ ...form, password: e.target.value });
                     }}
