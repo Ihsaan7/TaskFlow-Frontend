@@ -1,9 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import apiConfig from "../../../../api/axios.config";
 import { useRouter } from "next/navigation";
+import { useTheme, getTheme } from "../../useTheme";
 
 export default function Register() {
+  const { isDark, toggleTheme, mounted } = useTheme();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -14,6 +16,8 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [focusedField, setFocusedField] = useState("");
   const router = useRouter();
+
+  const colors = getTheme(isDark);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,17 +48,25 @@ export default function Register() {
     }
   };
 
-  const colors = {
-    warm: "#d48166",
-    dark: "#373a36",
-    light: "#e6e2dd",
-  };
+  if (!mounted) return null;
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center overflow-hidden relative"
+      className="min-h-screen w-full flex items-center justify-center overflow-hidden relative transition-colors duration-300"
       style={{ backgroundColor: colors.light }}
     >
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 z-20 p-2 mr-4 lg:mr-0  border-2 font-bold transition-all duration-300"
+        style={{
+          borderColor: colors.warm,
+          backgroundColor: colors.warm,
+          color: colors.light,
+        }}
+      >
+        {isDark ? "☀️ Light" : "🌙 Dark"}
+      </button>
+
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="absolute -top-40 -right-40 w-80 h-80 blur-3xl animate-pulse"
@@ -70,7 +82,7 @@ export default function Register() {
 
       <div className="relative z-10 w-full max-w-6xl mx-4 animate-[fadeIn_0.6s_ease-out]">
         <div
-          className="border-2 backdrop-blur-xl overflow-hidden"
+          className="border-2 backdrop-blur-xl overflow-hidden transition-colors duration-300"
           style={{
             borderColor: colors.warm,
             backgroundColor: colors.light,
@@ -78,7 +90,7 @@ export default function Register() {
         >
           <div className="flex flex-col lg:flex-row">
             <div
-              className="lg:w-2/5 p-8 lg:p-12 flex flex-col justify-between border-b-2 lg:border-b-0 lg:border-r-2"
+              className="lg:w-2/5 p-8 lg:p-12 flex flex-col justify-between border-b-2 lg:border-b-0 lg:border-r-2 transition-colors duration-300"
               style={{
                 borderColor: colors.warm,
                 backgroundColor: colors.dark,
@@ -86,7 +98,7 @@ export default function Register() {
             >
               <div className="space-y-4 animate-[slideUp_0.5s_ease-out]">
                 <div
-                  className="inline-block px-4 py-2 border text-xs font-bold tracking-widest uppercase"
+                  className="inline-block px-4 py-2 border text-xs font-bold tracking-widest uppercase transition-colors duration-300"
                   style={{
                     borderColor: colors.warm,
                     backgroundColor: `${colors.warm}20`,
@@ -97,19 +109,19 @@ export default function Register() {
                 </div>
                 <div>
                   <h1
-                    className="text-5xl lg:text-6xl font-black tracking-tight mb-2"
-                    style={{ color: colors.light }}
+                    className="text-5xl lg:text-6xl font-black tracking-tight mb-2 transition-colors duration-300"
+                    style={{ color: isDark ? "#e6e2dd" : colors.light }}
                   >
                     CREATE
                   </h1>
                   <div
-                    className="h-1.5 w-40"
+                    className="h-1.5 w-40 transition-all duration-300"
                     style={{
                       background: `linear-gradient(to right, ${colors.warm}, ${colors.warm}80)`,
                     }}
                   ></div>
                   <h2
-                    className="text-5xl lg:text-6xl font-black tracking-tight mt-2"
+                    className="text-5xl lg:text-6xl font-black tracking-tight mt-2 transition-colors duration-300"
                     style={{
                       color: colors.warm,
                     }}
@@ -121,8 +133,8 @@ export default function Register() {
 
               <div className="space-y-6 animate-[slideUp_0.6s_ease-out]">
                 <p
-                  className="leading-relaxed text-sm"
-                  style={{ color: colors.light }}
+                  className="leading-relaxed text-sm transition-colors duration-300"
+                  style={{ color: isDark ? "#e6e2dd" : colors.light }}
                 >
                   Create your account and join our community. Simple, secure,
                   and fast.
@@ -131,38 +143,47 @@ export default function Register() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-2 h-6"
+                      className="w-2 h-6 transition-colors duration-300"
                       style={{ backgroundColor: colors.warm }}
                     ></div>
-                    <span className="text-sm" style={{ color: colors.light }}>
+                    <span
+                      className="text-sm transition-colors duration-300"
+                      style={{ color: isDark ? "#e6e2dd" : colors.light }}
+                    >
                       Quick registration
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-2 h-6"
+                      className="w-2 h-6 transition-colors duration-300"
                       style={{ backgroundColor: colors.warm }}
                     ></div>
-                    <span className="text-sm" style={{ color: colors.light }}>
+                    <span
+                      className="text-sm transition-colors duration-300"
+                      style={{ color: isDark ? "#e6e2dd" : colors.light }}
+                    >
                       Fully secure
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-2 h-6"
+                      className="w-2 h-6 transition-colors duration-300"
                       style={{ backgroundColor: colors.warm }}
                     ></div>
-                    <span className="text-sm" style={{ color: colors.light }}>
+                    <span
+                      className="text-sm transition-colors duration-300"
+                      style={{ color: isDark ? "#e6e2dd" : colors.light }}
+                    >
                       Ready to go
                     </span>
                   </div>
                 </div>
 
                 <p
-                  className="text-sm pt-4 border-t"
+                  className="text-sm pt-4 border-t transition-colors duration-300"
                   style={{
                     borderTopColor: `${colors.warm}30`,
-                    color: colors.light,
+                    color: isDark ? "#e6e2dd" : colors.light,
                   }}
                 >
                   Already have an account?{" "}
@@ -182,11 +203,11 @@ export default function Register() {
             </div>
 
             <div
-              className="lg:w-3/5 p-8 lg:p-12"
+              className="lg:w-3/5 p-8 lg:p-12 transition-colors duration-300"
               style={{ backgroundColor: colors.light }}
             >
               <h3
-                className="text-2xl font-bold mb-8 tracking-tight"
+                className="text-2xl font-bold mb-8 tracking-tight transition-colors duration-300"
                 style={{
                   color: colors.dark,
                 }}
@@ -199,7 +220,7 @@ export default function Register() {
                   {/* Full Name */}
                   <div className="animate-[slideUp_0.4s_ease-out]">
                     <label
-                      className="block text-xs font-semibold mb-3 uppercase tracking-wide"
+                      className="block text-xs font-semibold mb-3 uppercase tracking-wide transition-colors duration-300"
                       style={{ color: colors.dark }}
                     >
                       Full Name
@@ -217,8 +238,12 @@ export default function Register() {
                       style={{
                         backgroundColor: "#FFFFFF",
                         borderColor:
-                          focusedField === "fullName" ? colors.warm : "#D0CCC8",
-                        color: colors.dark,
+                          focusedField === "fullName"
+                            ? colors.warm
+                            : isDark
+                            ? "#404040"
+                            : "#D0CCC8",
+                        color: isDark ? "#e6e2dd" : colors.dark,
                       }}
                       className="w-full px-4 py-3 border-2 placeholder-gray-400 focus:outline-none transition-all duration-300"
                     />
@@ -227,7 +252,7 @@ export default function Register() {
                   {/* Username */}
                   <div className="animate-[slideUp_0.45s_ease-out]">
                     <label
-                      className="block text-xs font-semibold mb-3 uppercase tracking-wide"
+                      className="block text-xs font-semibold mb-3 uppercase tracking-wide transition-colors duration-300"
                       style={{ color: colors.dark }}
                     >
                       Username
@@ -245,8 +270,12 @@ export default function Register() {
                       style={{
                         backgroundColor: "#FFFFFF",
                         borderColor:
-                          focusedField === "username" ? colors.warm : "#D0CCC8",
-                        color: colors.dark,
+                          focusedField === "username"
+                            ? colors.warm
+                            : isDark
+                            ? "#404040"
+                            : "#D0CCC8",
+                        color: isDark ? "#e6e2dd" : colors.dark,
                       }}
                       className="w-full px-4 py-3 border-2 placeholder-gray-400 focus:outline-none transition-all duration-300"
                     />
@@ -256,7 +285,7 @@ export default function Register() {
                 {/* Email */}
                 <div className="animate-[slideUp_0.5s_ease-out]">
                   <label
-                    className="block text-xs font-semibold mb-3 uppercase tracking-wide"
+                    className="block text-xs font-semibold mb-3 uppercase tracking-wide transition-colors duration-300"
                     style={{ color: colors.dark }}
                   >
                     Email Address
@@ -274,8 +303,12 @@ export default function Register() {
                     style={{
                       backgroundColor: "#FFFFFF",
                       borderColor:
-                        focusedField === "email" ? colors.warm : "#D0CCC8",
-                      color: colors.dark,
+                        focusedField === "email"
+                          ? colors.warm
+                          : isDark
+                          ? "#404040"
+                          : "#D0CCC8",
+                      color: isDark ? "#e6e2dd" : colors.dark,
                     }}
                     className="w-full px-4 py-3 border-2 placeholder-gray-400 focus:outline-none transition-all duration-300"
                   />
@@ -284,7 +317,7 @@ export default function Register() {
                 {/* Password */}
                 <div className="animate-[slideUp_0.55s_ease-out]">
                   <label
-                    className="block text-xs font-semibold mb-3 uppercase tracking-wide"
+                    className="block text-xs font-semibold mb-3 uppercase tracking-wide transition-colors duration-300"
                     style={{ color: colors.dark }}
                   >
                     Password
@@ -302,8 +335,12 @@ export default function Register() {
                     style={{
                       backgroundColor: "#FFFFFF",
                       borderColor:
-                        focusedField === "password" ? colors.warm : "#D0CCC8",
-                      color: colors.dark,
+                        focusedField === "password"
+                          ? colors.warm
+                          : isDark
+                          ? "#404040"
+                          : "#D0CCC8",
+                      color: isDark ? "#e6e2dd" : colors.dark,
                     }}
                     className="w-full px-4 py-3 border-2 placeholder-gray-400 focus:outline-none transition-all duration-300"
                   />
@@ -313,7 +350,7 @@ export default function Register() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 animate-[slideUp_0.6s_ease-out]">
                   <div>
                     <label
-                      className="block text-xs font-semibold mb-3 uppercase tracking-wide"
+                      className="block text-xs font-semibold mb-3 uppercase tracking-wide transition-colors duration-300"
                       style={{ color: colors.dark }}
                     >
                       Avatar
@@ -323,9 +360,9 @@ export default function Register() {
                       id="avatar"
                       accept="image/*"
                       style={{
-                        backgroundColor: "#FFFFFF",
-                        borderColor: "#D0CCC8",
-                        color: colors.dark,
+                        backgroundColor: isDark ? "#0a0a0a" : "#FFFFFF",
+                        borderColor: "#FFFFFF",
+                        color: isDark ? colors.light : colors.dark,
                       }}
                       className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:border-2 file:font-semibold file:cursor-pointer file:transition-all file:duration-300 file:uppercase file:text-xs file:tracking-wide cursor-pointer border-2 p-3 focus:outline-none transition-all duration-300"
                     />
@@ -333,7 +370,7 @@ export default function Register() {
 
                   <div>
                     <label
-                      className="block text-xs font-semibold mb-3 uppercase tracking-wide"
+                      className="block text-xs font-semibold mb-3 uppercase tracking-wide transition-colors duration-300"
                       style={{ color: colors.dark }}
                     >
                       Cover Image
@@ -343,9 +380,9 @@ export default function Register() {
                       id="coverImage"
                       accept="image/*"
                       style={{
-                        backgroundColor: "#FFFFFF",
-                        borderColor: "#D0CCC8",
-                        color: colors.dark,
+                        backgroundColor: isDark ? "#0a0a0a" : "#FFFFFF",
+                        borderColor: "#FFFFFF",
+                        color: isDark ? colors.light : colors.dark,
                       }}
                       className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:border-2 file:font-semibold file:cursor-pointer file:transition-all file:duration-300 file:uppercase file:text-xs file:tracking-wide cursor-pointer border-2 p-3 focus:outline-none transition-all duration-300"
                     />
@@ -354,7 +391,7 @@ export default function Register() {
 
                 {/* Divider */}
                 <div
-                  className="h-px my-8"
+                  className="h-px my-8 transition-all duration-300"
                   style={{
                     background: `linear-gradient(to right, transparent, ${colors.warm}30, transparent)`,
                   }}
@@ -398,7 +435,7 @@ export default function Register() {
 
                 {message && (
                   <div
-                    className={`p-4 text-center text-xs font-semibold uppercase tracking-wide animate-[fadeIn_0.3s_ease-out] border-2`}
+                    className={`p-4 text-center text-xs font-semibold uppercase tracking-wide animate-[fadeIn_0.3s_ease-out] border-2 transition-colors duration-300`}
                     style={{
                       backgroundColor: message.includes("Registered")
                         ? `${colors.warm}15`
