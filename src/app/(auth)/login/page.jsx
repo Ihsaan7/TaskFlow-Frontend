@@ -1,8 +1,9 @@
-"use client";
+// "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import apiConfig from "../../../../api/axios.config";
 import { useTheme, getTheme } from "../../useTheme";
+import useAuthStore from "@/store/authStore";
 
 export default function Login() {
   const { isDark, toggleTheme, mounted } = useTheme();
@@ -21,6 +22,7 @@ export default function Login() {
 
     try {
       const res = await apiConfig.post("/api/v1/users/login", form);
+      useAuthStore.getState().setUser(res.data.user);
       setMessage("Login Successful! Redirecting...");
 
       setTimeout(() => router.push("/boards"), 1000);
