@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import apiConfig from "../../../api/axios.config";
 import { Plus } from "lucide-react";
+import BoardCard from "../components/Board";
 
 export default function () {
   const [description, setDescription] = useState("");
@@ -61,14 +62,12 @@ export default function () {
 
             {data?.map((board) => {
               return (
-                <a
+                <BoardCard
+                  title={board.title}
+                  description={board.description}
+                  color={board.background}
                   key={board._id}
-                  href={`/board/${board._id}`}
-                  className="rounded-lg h-32 flex items-end p-4 text-white font-bold text-lg shadow-lg hover:shadow-xl transition"
-                  style={{ backgroundColor: board.background || "#0079BF" }}
-                >
-                  {board.title}
-                </a>
+                />
               );
             })}
           </div>
@@ -76,7 +75,7 @@ export default function () {
 
         {isOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg w-96">
+            <div className="bg-black p-6 rounded-lg w-96">
               <h2 className="text-2xl font-bold mb-4">Create Board</h2>
               <form onSubmit={handleSubmit}>
                 <input
@@ -101,6 +100,41 @@ export default function () {
                   placeholder="Background color (e.g. #0079BF)"
                   className="w-full p-3 border rounded-lg mb-4"
                 />
+                {/* Color palette */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {[
+                    "#0079BF",
+                    "#00C2E0",
+                    "#51E898",
+                    "#FFAB4A",
+                    "#FF6F61",
+                    "#C377E0",
+                    "#F5F5F5",
+                    "#B3BAC5",
+                  ].map((hex) => (
+                    <div
+                      key={hex}
+                      onClick={() => {
+                        setBackground(hex.replace("#", ""));
+                        navigator.clipboard.writeText(hex);
+                      }}
+                      title={`Click to copy ${hex}`}
+                      style={{
+                        backgroundColor: hex,
+                        cursor: "pointer",
+                        border:
+                          background === hex.replace("#", "")
+                            ? "2px solid #333"
+                            : "1px solid #ccc",
+                      }}
+                      className="w-8 h-8 rounded transition-all flex items-center justify-center"
+                    >
+                      {background === hex.replace("#", "") && (
+                        <span className="text-xs text-black">✓</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
                 <div className="flex gap-3">
                   <button
                     type="submit"
