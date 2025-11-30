@@ -62,12 +62,13 @@ export default function () {
 
             {data?.map((board) => {
               return (
-                <BoardCard
-                  title={board.title}
-                  description={board.description}
-                  color={board.background}
-                  key={board._id}
-                />
+                <a href={`/board/${board._id}`} key={board._id}>
+                  <BoardCard
+                    title={board.title}
+                    description={board.description}
+                    color={board.background}
+                  />
+                </a>
               );
             })}
           </div>

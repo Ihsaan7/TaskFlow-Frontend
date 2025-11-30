@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import apiConfig from "../../../../api/axios.config";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -11,18 +11,73 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-function SortableList({ list }) {
+function SortableCard({ card }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: card._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="bg-gray-700 rounded p-3 mb-2 cursor-grab active:cursor-grabbing hover:bg-gray-600"
+    >
+      <p className="text-white text-sm font-medium">{card.title}</p>
+      {card.description && (
+        <p className="text-gray-400 text-xs mt-1">{card.description}</p>
+      )}
+      {card.labels && card.labels.length > 0 && (
+        <div className="flex gap-1 mt-2 flex-wrap">
+          {card.labels.map((label, idx) => (
+            <span key={idx} className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded">
+              {label}
+            </span>
+          ))}
+        </div>
+      )}
+      {card.dueDate && (
+        <p className="text-gray-400 text-xs mt-1">
+          Due: {new Date(card.dueDate).toLocaleDateString()}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function SortableList({ list, boardID }) {
+  const queryClient = useQueryClient();
+  const [isAddingCard, setIsAddingCard] = useState(false);
+  const [cardForm, setCardForm] = useState({
+    title: "",
+    description: "",
+    dueDate: "",
+    labels: "",
+  });
+
   const {
     attributes,
     listeners,
@@ -38,16 +93,110 @@ function SortableList({ list }) {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const { data: cards = [] } = useQuery({
+    queryKey: ["cards", list._id],
+    queryFn: () =>
+      apiConfig
+        .get(`/api/v1/cards/${list._id}/all-card`)
+        .then((res) => res.data.data)
+        .catch(() => []),
+  });
+
+  const createCard = useMutation({
+    mutationFn: (cardData) =>
+      apiConfig.post(`/api/v1/cards/${boardID}/${list._id}/create-card`, {
+        title: cardData.title,
+        description: cardData.description || undefined,
+        dueDate: cardData.dueDate || undefined,
+        labels: cardData.labels ? cardData.labels.split(",").map(l => l.trim()).filter(Boolean) : undefined,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["cards", list._id]);
+      setCardForm({ title: "", description: "", dueDate: "", labels: "" });
+      setIsAddingCard(false);
+    },
+  });
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className="bg-gray-800 rounded-lg p-4 min-w-80 cursor-grab active:cursor-grabbing"
+      className="bg-gray-800 rounded-lg p-4 min-w-80 max-w-80"
     >
-      <h3 className="font-bold mb-3 text-white">{list.title}</h3>
-      <p className="text-gray-400 text-sm">Drag me!</p>
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing mb-3"
+      >
+        <h3 className="font-bold text-white">{list.title}</h3>
+      </div>
+
+      <div className="space-y-2 mb-3">
+        {cards.length > 0 ? (
+          cards.map((card) => <SortableCard key={card._id} card={card} />)
+        ) : (
+          <p className="text-gray-500 text-sm">No cards yet</p>
+        )}
+      </div>
+
+      {!isAddingCard ? (
+        <button
+          onClick={() => setIsAddingCard(true)}
+          className="w-full text-left text-gray-400 hover:text-white text-sm flex items-center gap-2 p-2 hover:bg-gray-700 rounded"
+        >
+          <Plus className="w-4 h-4" />
+          Add a card
+        </button>
+      ) : (
+        <div className="bg-gray-700 rounded p-3 space-y-2">
+          <input
+            type="text"
+            value={cardForm.title}
+            onChange={(e) => setCardForm({ ...cardForm, title: e.target.value })}
+            placeholder="Card title (required)"
+            className="w-full bg-gray-600 text-white p-2 rounded text-sm"
+            autoFocus
+          />
+          <textarea
+            value={cardForm.description}
+            onChange={(e) => setCardForm({ ...cardForm, description: e.target.value })}
+            placeholder="Description (optional)"
+            className="w-full bg-gray-600 text-white p-2 rounded text-sm resize-none"
+            rows={2}
+          />
+          <input
+            type="date"
+            value={cardForm.dueDate}
+            onChange={(e) => setCardForm({ ...cardForm, dueDate: e.target.value })}
+            className="w-full bg-gray-600 text-white p-2 rounded text-sm"
+          />
+          <input
+            type="text"
+            value={cardForm.labels}
+            onChange={(e) => setCardForm({ ...cardForm, labels: e.target.value })}
+            placeholder="Labels (comma separated)"
+            className="w-full bg-gray-600 text-white p-2 rounded text-sm"
+          />
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={() => createCard.mutate(cardForm)}
+              disabled={!cardForm.title.trim()}
+              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-3 py-1 rounded text-sm"
+            >
+              Add Card
+            </button>
+            <button
+              onClick={() => {
+                setIsAddingCard(false);
+                setCardForm({ title: "", description: "", dueDate: "", labels: "" });
+              }}
+              className="text-gray-400 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -125,21 +274,9 @@ export default function BoardPage() {
             {loading ? (
               <p>Loading lists...</p>
             ) : (
-              // <div className="grid grid-cols-1 w-full sm:grid-cols-2 md:grid-cols-2 gap-4">
-              //   {lists.map((list) => (
-              //     <div
-              //       key={list._id}
-              //       className="bg-gray-800 rounded-lg p-4 min-w-80 min-h-30"
-              //     >
-              //       <h3 className="font-bold mb-3">{list.title}</h3>
-              //       <div className="space-y-2">
-              //         {/* Cards will go here later */}
-              //         <p className="text-gray-500 text-sm">No cards yet</p>
-              //       </div>
-              //     </div>
-              //   ))}
-              // </div>
-              lists.map((list) => <SortableList key={list._id} list={list} />)
+              lists.map((list) => (
+                <SortableList key={list._id} list={list} boardID={boardID} />
+              ))
             )}
 
             {/* Add List Button */}
@@ -152,14 +289,16 @@ export default function BoardPage() {
                 <span>Add a list</span>
               </button>
             ) : (
-              <div className="bg-white rounded-lg p-4 min-w-80">
+              <div className="bg-gray-800 rounded-lg p-4 min-w-80">
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && createList.mutate(newTitle)
-                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && newTitle.trim()) {
+                      createList.mutate(newTitle);
+                    }
+                  }}
                   placeholder="Enter list title..."
                   className="w-full bg-gray-700 text-white p-3 rounded mb-3"
                   autoFocus
@@ -167,7 +306,8 @@ export default function BoardPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => createList.mutate(newTitle)}
-                    className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+                    disabled={!newTitle.trim()}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded"
                   >
                     Add list
                   </button>
@@ -178,7 +318,7 @@ export default function BoardPage() {
                     }}
                     className="text-gray-400 hover:text-white"
                   >
-                    Cancel
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               </div>
