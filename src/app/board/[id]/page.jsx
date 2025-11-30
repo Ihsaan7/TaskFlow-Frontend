@@ -4,7 +4,53 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import apiConfig from "../../../../api/axios.config";
 import { Plus } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
+function SortableList({ list }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: list._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="bg-gray-800 rounded-lg p-4 min-w-80 cursor-grab active:cursor-grabbing"
+    >
+      <h3 className="font-bold mb-3 text-white">{list.title}</h3>
+      <p className="text-gray-400 text-sm">Drag me!</p>
+    </div>
+  );
+}
 export default function BoardPage() {
   const { id: boardID } = useParams();
   const queryClient = useQueryClient();
@@ -25,6 +71,28 @@ export default function BoardPage() {
         .then((res) => res.data.data),
   });
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = lists.findIndex((l) => l._id === active.id);
+    const newIndex = lists.findIndex((l) => l._id === over.id);
+    const newOrder = arrayMove(lists, oldIndex, newIndex);
+
+    // Update UI instantly
+    queryClient.setQueryData(["lists", boardID], newOrder);
+
+    // Send new order to backend
+    apiConfig.patch(`/api/v1/lists/reorder-list`, {
+      lists: newOrder.map((list, index) => ({ id: list._id, position: index })),
+    });
+  };
+
   const createList = useMutation({
     mutationFn: (title) =>
       apiConfig.post(`/api/v1/lists/${boardID}/create-list`, { title }),
@@ -44,69 +112,80 @@ export default function BoardPage() {
         {board?.title || "Loading..."}
       </h1>
 
-      <div className="flex gap-6 overflow-x-auto pb-4">
-        {/* All Lists */}
-        {loading ? (
-          <p>Loading lists...</p>
-        ) : (
-          <div className="grid grid-cols-1 w-full sm:grid-cols-2 md:grid-cols-2 gap-4">
-            {lists.map((list) => (
-              <div
-                key={list._id}
-                className="bg-gray-800 rounded-lg p-4 min-w-80 min-h-30"
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={lists.map((l) => l._id)}
+          strategy={horizontalListSortingStrategy}
+        >
+          <div className="flex gap-6 overflow-x-auto pb-4">
+            {loading ? (
+              <p>Loading lists...</p>
+            ) : (
+              // <div className="grid grid-cols-1 w-full sm:grid-cols-2 md:grid-cols-2 gap-4">
+              //   {lists.map((list) => (
+              //     <div
+              //       key={list._id}
+              //       className="bg-gray-800 rounded-lg p-4 min-w-80 min-h-30"
+              //     >
+              //       <h3 className="font-bold mb-3">{list.title}</h3>
+              //       <div className="space-y-2">
+              //         {/* Cards will go here later */}
+              //         <p className="text-gray-500 text-sm">No cards yet</p>
+              //       </div>
+              //     </div>
+              //   ))}
+              // </div>
+              lists.map((list) => <SortableList key={list._id} list={list} />)
+            )}
+
+            {/* Add List Button */}
+            {!isAdding ? (
+              <button
+                onClick={() => setIsAdding(true)}
+                className="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-lg p-4 min-w-80 flex items-center gap-3"
               >
-                <h3 className="font-bold mb-3">{list.title}</h3>
-                <div className="space-y-2">
-                  {/* Cards will go here later */}
-                  <p className="text-gray-500 text-sm">No cards yet</p>
+                <Plus className="w-6 h-6" />
+                <span>Add a list</span>
+              </button>
+            ) : (
+              <div className="bg-white rounded-lg p-4 min-w-80">
+                <input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && createList.mutate(newTitle)
+                  }
+                  placeholder="Enter list title..."
+                  className="w-full bg-gray-700 text-white p-3 rounded mb-3"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => createList.mutate(newTitle)}
+                    className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+                  >
+                    Add list
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsAdding(false);
+                      setNewTitle("");
+                    }}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
-            ))}
+            )}
           </div>
-        )}
-
-        {/* Add List Button */}
-        {!isAdding ? (
-          <button
-            onClick={() => setIsAdding(true)}
-            className="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-lg p-4 min-w-80 flex items-center gap-3"
-          >
-            <Plus className="w-6 h-6" />
-            <span>Add a list</span>
-          </button>
-        ) : (
-          <div className="bg-white rounded-lg p-4 min-w-80">
-            <input
-              type="text"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && createList.mutate(newTitle)
-              }
-              placeholder="Enter list title..."
-              className="w-full bg-gray-700 text-white p-3 rounded mb-3"
-              autoFocus
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={() => createList.mutate(newTitle)}
-                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
-              >
-                Add list
-              </button>
-              <button
-                onClick={() => {
-                  setIsAdding(false);
-                  setNewTitle("");
-                }}
-                className="text-gray-400 hover:text-white"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 }
