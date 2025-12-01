@@ -7,23 +7,21 @@ const useAuthStore = create((set) => ({
 
   checkAuth: async () => {
     try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        set({ user: null, loading: false });
-        return;
-      }
       const res = await apiConfig.get("/api/v1/users/me");
       set({ user: res.data.data, loading: false });
     } catch (err) {
-      localStorage.removeItem("accessToken");
       set({ user: null, loading: false });
     }
   },
 
   setUser: (user) => set({ user, loading: false }),
 
-  logout: () => {
-    localStorage.removeItem("accessToken");
+  logout: async () => {
+    try {
+      await apiConfig.post("/api/v1/users/logout");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
     set({ user: null });
   },
 }));

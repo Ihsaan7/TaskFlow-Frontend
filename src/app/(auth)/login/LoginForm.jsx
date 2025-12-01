@@ -21,9 +21,8 @@ export default function LoginForm() {
 
     try {
       const res = await apiConfig.post("/api/v1/users/login", form);
-      const { user, accessToken } = res.data.data;
+      const { user } = res.data.data;
       
-      localStorage.setItem("accessToken", accessToken);
       useAuthStore.getState().setUser(user);
       setMessage("Login Successful! Redirecting...");
 
