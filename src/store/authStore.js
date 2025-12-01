@@ -7,9 +7,15 @@ const useAuthStore = create((set) => ({
 
   checkAuth: async () => {
     try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        set({ user: null, loading: false });
+        return;
+      }
       const res = await apiConfig.get("/api/v1/users/me");
-      set({ user: res.data.user, loading: false });
+      set({ user: res.data.data, loading: false });
     } catch (err) {
+      localStorage.removeItem("accessToken");
       set({ user: null, loading: false });
     }
   },
@@ -17,10 +23,7 @@ const useAuthStore = create((set) => ({
   setUser: (user) => set({ user, loading: false }),
 
   logout: () => {
-    document.cookie =
-      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie =
-      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.removeItem("accessToken");
     set({ user: null });
   },
 }));

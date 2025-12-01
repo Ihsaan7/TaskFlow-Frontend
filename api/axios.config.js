@@ -5,6 +5,19 @@ const apiConfig = axios.create({
   withCredentials: true,
 });
 
+apiConfig.interceptors.request.use(
+  (config) => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 apiConfig.interceptors.response.use(
   (res) => res,
   (error) => {

@@ -21,7 +21,10 @@ export default function LoginForm() {
 
     try {
       const res = await apiConfig.post("/api/v1/users/login", form);
-      useAuthStore.getState().setUser(res.data.user);
+      const { user, accessToken } = res.data.data;
+      
+      localStorage.setItem("accessToken", accessToken);
+      useAuthStore.getState().setUser(user);
       setMessage("Login Successful! Redirecting...");
 
       setTimeout(() => router.push("/boards"), 1000);
