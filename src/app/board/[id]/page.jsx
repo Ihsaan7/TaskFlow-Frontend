@@ -53,7 +53,10 @@ function SortableCard({ card }) {
       {card.labels && card.labels.length > 0 && (
         <div className="flex gap-1 mt-2 flex-wrap">
           {card.labels.map((label, idx) => (
-            <span key={idx} className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded">
+            <span
+              key={idx}
+              className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded"
+            >
               {label}
             </span>
           ))}
@@ -108,7 +111,12 @@ function SortableList({ list, boardID }) {
         title: cardData.title,
         description: cardData.description || undefined,
         dueDate: cardData.dueDate || undefined,
-        labels: cardData.labels ? cardData.labels.split(",").map(l => l.trim()).filter(Boolean) : undefined,
+        labels: cardData.labels
+          ? cardData.labels
+              .split(",")
+              .map((l) => l.trim())
+              .filter(Boolean)
+          : undefined,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries(["cards", list._id]);
@@ -131,11 +139,20 @@ function SortableList({ list, boardID }) {
         <h3 className="font-bold text-white">{list.title}</h3>
       </div>
 
-      <div className="space-y-2 mb-3">
+      <div style={{ marginBottom: "12px" }}>
         {cards.length > 0 ? (
-          cards.map((card) => <SortableCard key={card._id} card={card} />)
+          cards.map((card) => <Card key={card._id} card={card} />)
         ) : (
-          <p className="text-gray-500 text-sm">No cards yet</p>
+          <p
+            style={{
+              color: "#888",
+              fontSize: "12px",
+              border: "1px solid #ccc",
+              padding: "4px",
+            }}
+          >
+            No cards yet
+          </p>
         )}
       </div>
 
@@ -152,14 +169,18 @@ function SortableList({ list, boardID }) {
           <input
             type="text"
             value={cardForm.title}
-            onChange={(e) => setCardForm({ ...cardForm, title: e.target.value })}
+            onChange={(e) =>
+              setCardForm({ ...cardForm, title: e.target.value })
+            }
             placeholder="Card title (required)"
             className="w-full bg-gray-600 text-white p-2 rounded text-sm"
             autoFocus
           />
           <textarea
             value={cardForm.description}
-            onChange={(e) => setCardForm({ ...cardForm, description: e.target.value })}
+            onChange={(e) =>
+              setCardForm({ ...cardForm, description: e.target.value })
+            }
             placeholder="Description (optional)"
             className="w-full bg-gray-600 text-white p-2 rounded text-sm resize-none"
             rows={2}
@@ -167,13 +188,17 @@ function SortableList({ list, boardID }) {
           <input
             type="date"
             value={cardForm.dueDate}
-            onChange={(e) => setCardForm({ ...cardForm, dueDate: e.target.value })}
+            onChange={(e) =>
+              setCardForm({ ...cardForm, dueDate: e.target.value })
+            }
             className="w-full bg-gray-600 text-white p-2 rounded text-sm"
           />
           <input
             type="text"
             value={cardForm.labels}
-            onChange={(e) => setCardForm({ ...cardForm, labels: e.target.value })}
+            onChange={(e) =>
+              setCardForm({ ...cardForm, labels: e.target.value })
+            }
             placeholder="Labels (comma separated)"
             className="w-full bg-gray-600 text-white p-2 rounded text-sm"
           />
@@ -188,7 +213,12 @@ function SortableList({ list, boardID }) {
             <button
               onClick={() => {
                 setIsAddingCard(false);
-                setCardForm({ title: "", description: "", dueDate: "", labels: "" });
+                setCardForm({
+                  title: "",
+                  description: "",
+                  dueDate: "",
+                  labels: "",
+                });
               }}
               className="text-gray-400 hover:text-white"
             >
