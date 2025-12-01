@@ -22,6 +22,12 @@ const useAuthStore = create((set) => ({
     } catch (err) {
       console.error("Logout error:", err);
     }
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+      }
+    } catch (_) {}
     set({ user: null });
   },
 }));
