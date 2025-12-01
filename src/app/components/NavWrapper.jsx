@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 export default function NavBarWrapper() {
   const pathName = usePathname();
-  const hideNav = pathName === "/signup" || pathName === "/login";
+  const hideNav = pathName === "/register" || pathName === "/login";
 
   return !hideNav ? <NavBar /> : null;
 }
