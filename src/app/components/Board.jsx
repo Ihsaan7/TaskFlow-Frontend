@@ -20,26 +20,26 @@ export default function BoardCard({ title, description, color, onDelete, onArchi
 
   return (
     <div
-      className="h-36 sm:h-40 p-3 sm:p-4 relative group border-2 border-[#3d362f] dark:border-[#5a4d42] hover:border-[#d48166] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+      className="h-48 sm:h-52 p-4 sm:p-6 relative group border-2 border-dashed border-[#8b4513] hover:border-[#d48166] transition-all duration-300 hover:-translate-y-1"
       style={{ backgroundColor: color?.startsWith("#") ? color : `#${color}` }}
     >
       <div className="flex flex-col h-full justify-between">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-white heading-bold drop-shadow-md line-clamp-1">
+          <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight drop-shadow-md line-clamp-2 mb-3">
             {title}
           </h2>
           {description && (
-            <p className="text-xs sm:text-sm text-white/80 mt-1 line-clamp-2 drop-shadow-sm">
+            <p className="text-sm sm:text-base text-white/90 mt-2 line-clamp-2 drop-shadow-sm font-medium">
               {description}
             </p>
           )}
         </div>
         
-        <div className="mt-2 pt-2 border-t border-dashed border-white/30">
-          <div className="flex items-center gap-1 text-white/90 group-hover:text-white transition-colors">
-            <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide">Open Board</span>
+        <div className="mt-3 pt-3 border-t-2 border-dashed border-white/40">
+          <div className="flex items-center gap-2 text-white group-hover:text-white transition-colors">
+            <span className="text-sm sm:text-base font-bold uppercase tracking-wide">Open Board</span>
             <ArrowRight 
-              size={14} 
+              size={18} 
               className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" 
             />
           </div>

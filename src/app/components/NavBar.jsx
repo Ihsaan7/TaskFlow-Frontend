@@ -75,9 +75,6 @@ export default function NavBar() {
                 >
                   <Search size={16} />
                   <span className="hidden md:inline">Search</span>
-                  <kbd className="hidden lg:inline text-xs px-1.5 py-0.5 border border-dashed border-[#d48166] theme-surface">
-                    Cmd+K
-                  </kbd>
                 </button>
               )}
 

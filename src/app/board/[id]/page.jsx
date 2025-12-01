@@ -46,23 +46,23 @@ function Card({ card, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="leather-card p-3 mb-3 cursor-pointer theme-surface theme-text animate-scale-in"
+      className="border-2 border-dashed border-[#8b4513] theme-surface p-4 mb-3 cursor-pointer hover:border-[#d48166] transition-all duration-300"
     >
       {card.labels && card.labels.length > 0 && (
-        <div className="flex gap-1 mb-2 flex-wrap">
+        <div className="flex gap-2 mb-3 flex-wrap">
           {card.labels.map((label, idx) => (
             <span
               key={idx}
-              className="bg-[#d48166] text-[#e6e2dd] text-xs px-2 py-0.5 border border-dashed border-[#b86b52]"
+              className="bg-[#d48166] text-[#e6e2dd] text-xs px-2 py-1 border border-dashed border-[#8b4513] uppercase font-bold"
             >
               {label}
             </span>
           ))}
         </div>
       )}
-      <p className="text-sm font-medium">{card.title}</p>
+      <p className="text-base font-black theme-text uppercase tracking-tight mb-2">{card.title}</p>
       {card.description && (
-        <p className="opacity-60 text-xs mt-1 line-clamp-2">
+        <p className="theme-text opacity-70 text-sm mt-2 line-clamp-2">
           {card.description}
         </p>
       )}
@@ -201,9 +201,9 @@ function SortableList({ list, boardID, onCardClick }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="leather-list p-4 min-w-[280px] sm:min-w-[320px] max-w-[280px] sm:max-w-[320px] animate-slide-up"
+      className="border-2 border-dashed border-[#8b4513] theme-surface p-4 min-w-[280px] sm:min-w-[320px] max-w-[280px] sm:max-w-[320px] transition-all duration-300"
     >
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-4">
         {isEditingTitle ? (
           <input
             type="text"
@@ -221,7 +221,7 @@ function SortableList({ list, boardID, onCardClick }) {
                 updateList.mutate(listTitle);
               }
             }}
-            className="input-field p-1 font-bold text-sm"
+            className="w-full p-2 border-2 border-dashed border-[#8b4513] theme-surface theme-text font-bold text-base uppercase"
             autoFocus
           />
         ) : (
@@ -229,7 +229,7 @@ function SortableList({ list, boardID, onCardClick }) {
             {...attributes}
             {...listeners}
             onClick={() => setIsEditingTitle(true)}
-            className="font-bold theme-text cursor-grab active:cursor-grabbing flex-1 text-sm uppercase tracking-wide"
+            className="font-black theme-text cursor-grab active:cursor-grabbing flex-1 text-lg uppercase tracking-tight"
           >
             {list.title}
           </h3>
@@ -272,13 +272,13 @@ function SortableList({ list, boardID, onCardClick }) {
       {!isAddingCard ? (
         <button
           onClick={() => setIsAddingCard(true)}
-          className="w-full text-left theme-text opacity-60 hover:opacity-100 text-sm flex items-center gap-2 p-2 hover:bg-[var(--surface-hover)] border-2 border-dashed border-transparent hover:border-[#d48166] transition-all"
+          className="w-full text-left theme-text text-sm flex items-center gap-2 p-3 border-2 border-dashed border-[#8b4513] hover:border-[#d48166] transition-all duration-300 uppercase font-bold tracking-wide"
         >
-          <Plus className="w-4 h-4" />
-          Add a card
+          <Plus className="w-5 h-5" />
+          Add Card
         </button>
       ) : (
-        <div className="leather-card p-3 space-y-2">
+        <div className="border-2 border-dashed border-[#8b4513] theme-surface p-3 space-y-2">
           <input
             type="text"
             value={cardForm.title}
@@ -286,7 +286,7 @@ function SortableList({ list, boardID, onCardClick }) {
               setCardForm({ ...cardForm, title: e.target.value })
             }
             placeholder="Card title (required)"
-            className="input-field text-sm"
+            className="w-full p-2 border-2 border-dashed border-[#8b4513] theme-surface theme-text text-sm uppercase font-bold"
             autoFocus
           />
           <textarea
@@ -295,7 +295,7 @@ function SortableList({ list, boardID, onCardClick }) {
               setCardForm({ ...cardForm, description: e.target.value })
             }
             placeholder="Description (optional)"
-            className="input-field text-sm resize-none"
+            className="w-full p-2 border-2 border-dashed border-[#8b4513] theme-surface theme-text text-sm resize-none"
             rows={2}
           />
           <input
@@ -410,20 +410,15 @@ export default function BoardPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen theme-bg">
-      <div
-        className="min-h-[calc(100vh-64px)] relative"
-        style={{ 
-          backgroundImage: `linear-gradient(135deg, ${board?.background || "#0079BF"}20 0%, transparent 50%), linear-gradient(225deg, ${board?.background || "#0079BF"}15 0%, transparent 50%)`,
-        }}
-      >
-        <div className="p-3 sm:p-4 border-b-2 border-dashed border-[#d48166] theme-surface flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-slide-down">
-          <div className="flex items-center gap-3">
+    <div className="min-h-screen theme-bg transition-colors duration-300">
+      <div className="min-h-[calc(100vh-64px)] relative">
+        <div className="p-4 sm:p-6 border-b-2 border-dashed border-[#8b4513] theme-surface flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
             <div 
-              className="w-4 h-8 sm:w-5 sm:h-10 border-2 border-dashed border-[#d48166]"
-              style={{ backgroundColor: board?.background || "#0079BF" }}
+              className="w-6 h-12 border-2 border-dashed border-[#8b4513]"
+              style={{ backgroundColor: board?.background || "#d48166" }}
             />
-            <h1 className="text-xl sm:text-2xl font-bold theme-text uppercase tracking-wide">{board?.title || "Loading..."}</h1>
+            <h1 className="text-3xl sm:text-4xl font-black theme-text uppercase tracking-tighter">{board?.title || "Loading..."}</h1>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
