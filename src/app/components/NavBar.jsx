@@ -109,7 +109,7 @@ export default function NavBar() {
                       </button>
 
                       {dropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-48 leather-panel theme-surface animate-scale-in z-50">
+                        <div className="absolute right-0 mt-6 w-48 leather-panel theme-surface animate-scale-in z-50">
                           <div className="p-3 border-b border-dashed border-[#d48166]">
                             <p className="font-bold theme-text text-sm truncate">
                               {user.fullName}
