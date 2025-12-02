@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="10" fill="#373a36"/>
+  <rect x="6" y="6" width="52" height="52" rx="8" fill="#2a2520" stroke="#b86b52" stroke-width="2" stroke-dasharray="4 3"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="30" text-anchor="middle" dominant-baseline="central">
+    <text x="32" y="30" fill="#e6e2dd">T</text>
+    <text x="32" y="48" fill="#d48166">F</text>
+  </g>
+</svg>
