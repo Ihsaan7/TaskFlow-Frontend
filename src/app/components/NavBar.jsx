@@ -109,30 +109,32 @@ export default function NavBar() {
                       </button>
 
                       {dropdownOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-48 leather-panel theme-surface animate-scale-in z-50">
-                          <div className="p-3 border-b border-dashed border-[#d48166]">
-                            <p className="font-bold theme-text text-sm truncate">
-                              {user.fullName}
-                            </p>
-                            <p className="text-xs theme-text opacity-60 truncate">
-                              {user.email}
-                            </p>
+                        <div className="absolute right-0 top-full mt-2 w-48 z-50">
+                          <div className="leather-panel theme-surface animate-scale-in">
+                            <div className="p-3 border-b border-dashed border-[#d48166]">
+                              <p className="font-bold theme-text text-sm truncate">
+                                {user.fullName}
+                              </p>
+                              <p className="text-xs theme-text opacity-60 truncate">
+                                {user.email}
+                              </p>
+                            </div>
+                            <a
+                              href="/boards"
+                              onClick={() => setDropdownOpen(false)}
+                              className="w-full p-3 text-left flex items-center gap-2 theme-text hover:bg-[var(--surface-hover)] text-sm transition-colors block"
+                            >
+                              <Layout size={14} />
+                              <span>My Boards</span>
+                            </a>
+                            <button
+                              onClick={handleLogout}
+                              className="w-full p-3 text-left flex items-center gap-2 text-red-500 hover:bg-[var(--surface-hover)] text-sm transition-colors"
+                            >
+                              <LogOut size={14} />
+                              <span>Logout</span>
+                            </button>
                           </div>
-                          <a
-                            href="/boards"
-                            onClick={() => setDropdownOpen(false)}
-                            className="w-full p-3 text-left flex items-center gap-2 theme-text hover:bg-[var(--surface-hover)] text-sm transition-colors block"
-                          >
-                            <Layout size={14} />
-                            <span>My Boards</span>
-                          </a>
-                          <button
-                            onClick={handleLogout}
-                            className="w-full p-3 text-left flex items-center gap-2 text-red-500 hover:bg-[var(--surface-hover)] text-sm transition-colors"
-                          >
-                            <LogOut size={14} />
-                            <span>Logout</span>
-                          </button>
                         </div>
                       )}
                     </div>
